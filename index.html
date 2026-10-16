@@ -2,375 +2,679 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PILTAE CHAT</title>
-  <style>
-    :root {
-      --bg: #080a10;
-      --panel: #10141e;
-      --border: #242b3b;
-      --text: #f1f4ff;
-      --muted: #8993aa;
-      --accent: #8b5cf6;
-      --cyan: #42e8e0;
-    }
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      background: radial-gradient(ellipse at top, #17152d, var(--bg) 60%);
-      color: var(--text);
-      font-family: Arial, sans-serif;
-      display: grid;
-      place-items: center;
-      padding: 20px;
-    }
-
-    button, input { font: inherit; }
-
-    .app { width: min(1050px, 100%); }
-
-    .brand {
-      text-align: center;
-      margin-bottom: 25px;
-    }
-
-    .logo {
-      font-size: clamp(32px, 6vw, 48px);
-      font-weight: 900;
-      letter-spacing: 5px;
-      background: linear-gradient(90deg, var(--cyan), #a78bfa, #f0abfc);
-      color: transparent;
-      background-clip: text;
-      -webkit-background-clip: text;
-    }
-
-    .subtitle {
-      color: var(--muted);
-      font-size: 12px;
-      letter-spacing: 4px;
-      margin-top: 8px;
-    }
-
-    .panel {
-      background: rgba(16, 20, 30, .96);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      box-shadow: 0 25px 80px #0008;
-      overflow: hidden;
-    }
-
-    .auth {
-      max-width: 430px;
-      margin: auto;
-      padding: 30px;
-    }
-
-    h2 { margin-top: 0; }
-
-    .muted { color: var(--muted); line-height: 1.6; }
-
-    .tabs {
-      display: flex;
-      gap: 8px;
-      margin: 24px 0;
-    }
-
-    .tabs button, .secondary {
-      background: #171c29;
-      color: var(--muted);
-      border: 1px solid var(--border);
-    }
-
-    button {
-      border-radius: 9px;
-      padding: 12px 15px;
-      cursor: pointer;
-      transition: .2s;
-    }
-
-    button:hover { filter: brightness(1.2); }
-
-    .tabs button { flex: 1; }
-
-    .tabs button.active {
-      background: #292047;
-      color: white;
-      border-color: var(--accent);
-    }
-
-    label {
-      display: block;
-      color: #c5cbe0;
-      font-size: 13px;
-      margin: 16px 0 8px;
-    }
-
-    input {
-      width: 100%;
-      padding: 13px;
-      background: #090d15;
-      color: white;
-      border: 1px solid var(--border);
-      border-radius: 9px;
-      outline: none;
-    }
-
-    input:focus { border-color: var(--accent); }
-
-    .primary {
-      width: 100%;
-      margin-top: 22px;
-      color: #080a10;
-      font-weight: bold;
-      border: 0;
-      background: linear-gradient(90deg, var(--cyan), #a78bfa);
-    }
-
-    .status {
-      min-height: 20px;
-      color: var(--cyan);
-      font-size: 13px;
-      margin-top: 15px;
-      overflow-wrap: anywhere;
-    }
-
-    .chat { display: none; min-height: 520px; }
-
-    .chat-layout {
-      display: grid;
-      grid-template-columns: 230px 1fr;
-      min-height: 520px;
-    }
-
-    .sidebar {
-      padding: 22px;
-      background: #0c1019;
-      border-right: 1px solid var(--border);
-    }
-
-    .channel {
-      margin-top: 22px;
-      padding: 12px;
-      background: #201a37;
-      border-radius: 8px;
-      color: #d8ccff;
-    }
-
-    .chat-main {
-      display: flex;
-      flex-direction: column;
-      min-width: 0;
-    }
-
-    .chat-header {
-      padding: 20px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .messages {
-      flex: 1;
-      padding: 20px;
-      min-height: 280px;
-    }
-
-    .welcome {
-      margin: 25px 0;
-      padding: 20px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      background: #141927;
-    }
-
-    .composer {
-      display: flex;
-      gap: 10px;
-      padding: 15px;
-      border-top: 1px solid var(--border);
-    }
-
-    .composer input { min-width: 0; }
-
-    .composer button {
-      background: var(--accent);
-      border: 0;
-      color: white;
-    }
-
-    .message {
-      margin: 12px 0;
-      padding: 12px;
-      border-radius: 10px;
-      background: #171c29;
-      overflow-wrap: anywhere;
-    }
-
-    .message strong { color: var(--cyan); }
-
-    .topline {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    .small { font-size: 12px; color: var(--muted); }
-
-    @media (max-width: 600px) {
-      .chat-layout { grid-template-columns: 1fr; }
-      .sidebar {
-        border-right: 0;
-        border-bottom: 1px solid var(--border);
-      }
-      .sidebar .muted { display: none; }
-      .auth { padding: 22px; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PILTAE CHAT</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root {
+  --bg:#080910;
+  --panel:#11131f;
+  --panel2:#171a29;
+  --line:#292d42;
+  --neon:#9b70ff;
+  --cyan:#43e5ff;
+  --text:#f2f3ff;
+  --muted:#9298b3;
+  --red:#ff637d;
+}
+* { box-sizing:border-box; }
+body {
+  margin:0;
+  min-height:100vh;
+  background:radial-gradient(ellipse at top,#17142e 0%,var(--bg) 55%);
+  color:var(--text);
+  font-family:Inter,Segoe UI,Arial,sans-serif;
+}
+button,input { font:inherit; }
+button { cursor:pointer; }
+button:disabled { opacity:.5; cursor:not-allowed; }
+.hidden { display:none!important; }
+.topbar {
+  height:72px; padding:0 6%;
+  display:flex; align-items:center; justify-content:space-between;
+  border-bottom:1px solid var(--line);
+  background:#090a12eF;
+}
+.logo { font-size:22px; font-weight:900; letter-spacing:2px; }
+.logo span { color:var(--neon); }
+.status { color:var(--muted); font-size:12px; }
+.dot {
+  display:inline-block; width:8px; height:8px;
+  border-radius:50%; background:#51e7a0;
+  margin-right:7px; box-shadow:0 0 10px #51e7a088;
+}
+main { width:min(1100px,94%); margin:36px auto; }
+.panel {
+  background:linear-gradient(145deg,#131522f5,#0d0f19f5);
+  border:1px solid var(--line); border-radius:18px;
+  box-shadow:0 18px 60px #0005;
+}
+.auth-wrap { max-width:450px; margin:55px auto; padding:30px; }
+.eyebrow {
+  color:var(--cyan); font-size:11px; font-weight:800;
+  letter-spacing:3px; text-transform:uppercase;
+}
+h1 { font-size:30px; margin:12px 0 8px; }
+p { color:var(--muted); line-height:1.6; }
+.tabs { display:flex; gap:8px; margin:24px 0; }
+.tabs button {
+  flex:1; border:1px solid var(--line); color:var(--muted);
+  background:var(--panel); border-radius:9px; padding:12px;
+}
+.tabs button.active {
+  color:white; border-color:var(--neon);
+  background:#9b70ff20;
+}
+.field { margin:15px 0; }
+label {
+  display:block; margin-bottom:7px;
+  font-size:12px; color:#c4c7dc;
+}
+input {
+  width:100%; background:#090b14; color:white;
+  border:1px solid var(--line); border-radius:9px;
+  padding:13px 14px; outline:none;
+}
+input:focus { border-color:var(--neon); box-shadow:0 0 0 3px #9b70ff18; }
+.primary {
+  width:100%; border:0; border-radius:9px; padding:14px;
+  color:white; font-weight:800;
+  background:linear-gradient(100deg,#8354ed,#5968ff);
+  box-shadow:0 5px 22px #8354ed30;
+}
+.primary:hover { filter:brightness(1.12); }
+.message { font-size:13px; margin-top:15px; overflow-wrap:anywhere; }
+.error { color:var(--red); }
+.success { color:#65e6b1; }
+.chat-layout {
+  display:grid; grid-template-columns:250px minmax(0,1fr);
+  gap:18px; align-items:start;
+}
+.sidebar { padding:20px; }
+.section-title {
+  color:var(--muted); font-size:11px;
+  font-weight:800; letter-spacing:2px; margin-bottom:15px;
+}
+.user-card {
+  background:var(--panel2); border:1px solid var(--line);
+  border-radius:12px; padding:13px; margin-bottom:24px;
+  overflow-wrap:anywhere;
+}
+.avatar {
+  width:38px; height:38px; display:grid; place-items:center;
+  background:#9b70ff25; color:var(--neon); border-radius:10px;
+  font-weight:900; margin-bottom:10px;
+}
+.username { font-weight:800; }
+.small { color:var(--muted); font-size:12px; margin-top:5px; }
+.secondary {
+  width:100%; padding:11px; color:#d9d9ec;
+  background:var(--panel2); border:1px solid var(--line);
+  border-radius:9px; margin-top:9px;
+}
+.secondary:hover { border-color:var(--neon); }
+.chat-panel { min-width:0; overflow:hidden; }
+.chat-head {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:20px; border-bottom:1px solid var(--line); gap:12px;
+}
+.chat-head h2 { font-size:17px; margin:0; }
+.chat-head p { font-size:12px; margin:5px 0 0; }
+.messages {
+  height:440px; overflow-y:auto; padding:20px;
+  display:flex; flex-direction:column; gap:13px;
+}
+.empty {
+  text-align:center; margin:auto; max-width:260px;
+}
+.msg {
+  background:var(--panel2); border:1px solid #24283a;
+  border-radius:12px; padding:12px 14px;
+  max-width:90%; align-self:flex-start;
+  overflow-wrap:anywhere;
+}
+.msg.mine {
+  align-self:flex-end; background:#39265b66;
+  border-color:#7651b766;
+}
+.msg-top {
+  display:flex; gap:12px; align-items:center;
+  margin-bottom:7px; flex-wrap:wrap;
+}
+.msg-name { font-size:12px; color:var(--cyan); font-weight:800; }
+.msg-time { font-size:10px; color:var(--muted); }
+.msg-content { white-space:pre-wrap; line-height:1.5; font-size:14px; }
+.composer {
+  display:flex; gap:10px; padding:15px;
+  border-top:1px solid var(--line);
+}
+.composer input { flex:1; min-width:0; }
+.send {
+  background:var(--neon); color:white; font-weight:800;
+  border:0; border-radius:9px; padding:0 20px;
+}
+.settings { padding:20px; margin-top:18px; }
+.settings h3 { margin-top:0; }
+.settings-grid {
+  display:grid; grid-template-columns:1fr 1fr; gap:12px;
+}
+.settings .primary { margin-top:15px; }
+footer {
+  text-align:center; padding:30px 10px 35px;
+  color:#666b84; font-size:11px; letter-spacing:1px;
+}
+@media(max-width:700px) {
+  .chat-layout { grid-template-columns:1fr; }
+  .sidebar { order:2; }
+  .messages { height:55vh; min-height:300px; }
+  .auth-wrap { margin:25px auto; padding:23px; }
+  .settings-grid { grid-template-columns:1fr; }
+  .topbar { padding:0 4%; }
+  main { margin:20px auto; }
+}
+</style>
 </head>
 <body>
-  <main class="app">
-    <header class="brand">
-      <div class="logo">PILTAE CHAT</div>
-      <div class="subtitle">YOUR SPACE. YOUR COMMUNITY.</div>
-    </header>
 
-    <section class="panel auth" id="authPanel">
-      <h2 id="formTitle">Welcome back.</h2>
-      <p class="muted" id="formDescription">Sign in to enter your community.</p>
+<header class="topbar">
+  <div class="logo">PILTAE <span>CHAT</span></div>
+  <div class="status"><span class="dot"></span><span id="connection">CONNECTING</span></div>
+</header>
 
-      <div class="tabs">
-        <button class="active" id="loginTab" type="button">Login</button>
-        <button id="signupTab" type="button">Create account</button>
-      </div>
+<main>
+  <section id="authView" class="panel auth-wrap">
+    <div class="eyebrow">Your community. Your space.</div>
+    <h1 id="authTitle">Welcome back.</h1>
+    <p id="authDescription">Sign in to enter PILTAE CHAT.</p>
 
-      <form id="authForm">
-        <div id="usernameField" hidden>
-          <label for="username">Username</label>
-          <input id="username" maxlength="24" autocomplete="username"
-                 placeholder="Choose a username">
+    <div class="tabs">
+      <button id="loginTab" class="active" type="button">LOGIN</button>
+      <button id="signupTab" type="button">CREATE ACCOUNT</button>
+    </div>
+
+    <form id="authForm">
+      <div id="nameFields" class="hidden">
+        <div class="field">
+          <label for="displayName">DISPLAY NAME</label>
+          <input id="displayName" maxlength="40" placeholder="Your display name" autocomplete="nickname">
         </div>
+        <div class="field">
+          <label for="newUsername">USERNAME</label>
+          <input id="newUsername" maxlength="24" minlength="3"
+            placeholder="e.g. piltae" autocomplete="username"
+            pattern="[A-Za-z0-9_]{3,24}"
+            title="Use 3–24 letters, numbers, or underscores.">
+        </div>
+      </div>
+      <div class="field">
+        <label for="email">EMAIL ADDRESS</label>
+        <input id="email" type="email" required maxlength="254"
+          placeholder="you@example.com" autocomplete="email">
+      </div>
+      <div class="field">
+        <label for="password">PASSWORD</label>
+        <input id="password" type="password" required minlength="8"
+          placeholder="At least 8 characters" autocomplete="current-password">
+      </div>
+      <button id="authSubmit" class="primary" type="submit">SIGN IN</button>
+      <div id="authMessage" class="message" role="status" aria-live="polite"></div>
+    </form>
+  </section>
 
-        <label for="email">Email</label>
-        <input id="email" type="email" autocomplete="email"
-               placeholder="you@example.com" required>
+  <section id="chatView" class="hidden">
+    <div class="chat-layout">
+      <aside class="panel sidebar">
+        <div class="section-title">YOUR ACCOUNT</div>
+        <div class="user-card">
+          <div class="avatar" id="avatar">P</div>
+          <div class="username" id="sideDisplayName">Loading...</div>
+          <div class="small" id="sideUsername">@username</div>
+          <div class="small">Member</div>
+        </div>
+        <div class="section-title">CHANNELS</div>
+        <div class="user-card">
+          <div class="username"># general</div>
+          <div class="small">The main community chat</div>
+        </div>
+        <button id="refreshButton" class="secondary" type="button">↻ Refresh messages</button>
+        <button id="logoutButton" class="secondary" type="button">Sign out</button>
+      </aside>
 
-        <label for="password">Password</label>
-        <input id="password" type="password" minlength="6"
-               autocomplete="current-password"
-               placeholder="Enter your password" required>
+      <section class="panel chat-panel">
+        <div class="chat-head">
+          <div>
+            <h2># general</h2>
+            <p>Talk with the community.</p>
+          </div>
+          <div class="status"><span class="dot"></span>LIVE CHAT</div>
+        </div>
+        <div id="messages" class="messages" aria-live="polite">
+          <div class="empty"><p>Loading messages...</p></div>
+        </div>
+        <form id="messageForm" class="composer">
+          <input id="messageInput" maxlength="2000" required
+            placeholder="Message #general..." autocomplete="off">
+          <button class="send" id="sendButton" type="submit">SEND</button>
+        </form>
+        <div id="chatMessage" class="message" role="status" style="padding:0 15px 12px"></div>
+      </section>
+    </div>
 
-        <button class="primary" id="submitButton" type="submit">Sign in</button>
-        <div class="status" id="authStatus" role="status"></div>
+    <section class="panel settings">
+      <h3>Profile settings</h3>
+      <p>Choose how other people see you in chat.</p>
+      <form id="profileForm">
+        <div class="settings-grid">
+          <div class="field">
+            <label for="editDisplayName">DISPLAY NAME</label>
+            <input id="editDisplayName" maxlength="40" required>
+          </div>
+          <div class="field">
+            <label for="editUsername">USERNAME</label>
+            <input id="editUsername" maxlength="24" minlength="3"
+              pattern="[A-Za-z0-9_]{3,24}" required
+              title="Use 3–24 letters, numbers, or underscores.">
+          </div>
+        </div>
+        <button class="primary" id="saveProfile" type="submit">SAVE PROFILE</button>
+        <div id="profileMessage" class="message" role="status"></div>
       </form>
-      <p class="small">Preview mode · Account services not connected yet</p>
     </section>
+  </section>
+</main>
 
-    <section class="panel chat" id="chatPanel">
-      <div class="chat-layout">
-        <aside class="sidebar">
-          <div class="topline">
-            <strong>Channels</strong>
-            <span class="small">PILTAE</span>
-          </div>
-          <div class="channel"># general</div>
-          <p class="muted">Welcome to your new community.</p>
-          <button class="secondary" id="logoutButton" type="button">Log out of preview</button>
-        </aside>
+<footer>PILTAE CHAT · COMMUNITY EDITION</footer>
 
-        <div class="chat-main">
-          <header class="chat-header">
-            <div class="topline">
-              <strong># general</strong>
-              <span class="small" id="currentUser"></span>
-            </div>
-            <p class="muted">A place to talk, share, and hang out.</p>
-          </header>
+<script>
+"use strict";
 
-          <div class="messages" id="messages">
-            <div class="welcome">
-              <h2>Welcome to PILTAE CHAT.</h2>
-              <p class="muted">Your new community starts here.</p>
-              <p class="small">Messages are only a local preview and are not shared.</p>
-            </div>
-          </div>
+// PILTAE CHAT Supabase connection
+const SUPABASE_URL = "https://dmowzcvbklsbavypoxpe.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_chC1FgmNCtEpmSEUego7-A_6pNTaqwn";
 
-          <form class="composer" id="messageForm">
-            <input id="messageInput" maxlength="1000"
-                   placeholder="Write a message..." required>
-            <button type="submit">Send</button>
-          </form>
-        </div>
-      </div>
-    </section>
-  </main>
+const client = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY
+);
 
-  <script>
-    const $ = id => document.getElementById(id);
-    let mode = "login";
+const $ = (id) => document.getElementById(id);
 
-    function setMode(nextMode) {
-      mode = nextMode;
-      const signup = mode === "signup";
+let authMode = "login";
+let currentUser = null;
+let currentProfile = null;
+let messageSubscription = null;
+let messageIds = new Set();
 
-      $("loginTab").classList.toggle("active", !signup);
-      $("signupTab").classList.toggle("active", signup);
-      $("usernameField").hidden = !signup;
-      $("username").required = signup;
-      $("formTitle").textContent = signup ? "Join PILTAE CHAT." : "Welcome back.";
-      $("formDescription").textContent = signup
-        ? "Create your account to get started."
-        : "Sign in to enter your community.";
-      $("submitButton").textContent = signup ? "Create account" : "Sign in";
-      $("password").autocomplete = signup ? "new-password" : "current-password";
-      $("authStatus").textContent = "";
+function showMessage(id, text, type = "") {
+  const element = $(id);
+  element.textContent = text;
+  element.className = "message " + type;
+}
+
+function setConnection(text) {
+  $("connection").textContent = text;
+}
+
+function setAuthMode(mode) {
+  authMode = mode;
+  const signup = mode === "signup";
+
+  $("loginTab").classList.toggle("active", !signup);
+  $("signupTab").classList.toggle("active", signup);
+  $("nameFields").classList.toggle("hidden", !signup);
+  $("authTitle").textContent = signup ? "Join the community." : "Welcome back.";
+  $("authDescription").textContent = signup
+    ? "Create your PILTAE CHAT account."
+    : "Sign in to enter PILTAE CHAT.";
+  $("authSubmit").textContent = signup ? "CREATE ACCOUNT" : "SIGN IN";
+  $("password").autocomplete = signup ? "new-password" : "current-password";
+  showMessage("authMessage", "");
+}
+
+$("loginTab").addEventListener("click", () => setAuthMode("login"));
+$("signupTab").addEventListener("click", () => setAuthMode("signup"));
+
+$("authForm").addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const email = $("email").value.trim();
+  const password = $("password").value;
+  const displayName = $("displayName").value.trim();
+  const username = $("newUsername").value.trim().toLowerCase();
+
+  if (authMode === "signup") {
+    if (!/^[a-zA-Z0-9_]{3,24}$/.test(username)) {
+      showMessage("authMessage",
+        "Username must be 3–24 characters using letters, numbers, or underscores.",
+        "error");
+      return;
     }
+    if (!displayName) {
+      showMessage("authMessage", "Please enter a display name.", "error");
+      return;
+    }
+  }
 
-    $("loginTab").addEventListener("click", () => setMode("login"));
-    $("signupTab").addEventListener("click", () => setMode("signup"));
+  $("authSubmit").disabled = true;
+  showMessage("authMessage", authMode === "signup"
+    ? "Creating your account..."
+    : "Signing in...");
 
-    $("authForm").addEventListener("submit", event => {
-      event.preventDefault();
-      $("authStatus").textContent =
-        "Preview only. Next, we'll connect real account services.";
+  try {
+    if (authMode === "signup") {
+      const { data, error } = await client.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            display_name: displayName,
+            username: username
+          }
+        }
+      });
+
+      if (error) throw error;
+
+      if (data.session) {
+        // The database trigger creates the profile; this saves the chosen username.
+        const { error: profileError } = await client
+          .from("profiles")
+          .update({
+            username,
+            display_name: displayName
+          })
+          .eq("id", data.user.id);
+
+        if (profileError) {
+          showMessage("authMessage",
+            "Your account was created, but profile setup needs attention: " +
+            profileError.message, "error");
+          return;
+        }
+
+        showMessage("authMessage", "Account created! Opening chat...", "success");
+      } else {
+        showMessage("authMessage",
+          "Account created! Check your email for the confirmation link. After confirming, sign in and set your username in Profile settings.",
+          "success");
+      }
+    } else {
+      const { error } = await client.auth.signInWithPassword({
+        email,
+        password
+      });
+      if (error) throw error;
+      showMessage("authMessage", "Signed in! Loading chat...", "success");
+    }
+  } catch (error) {
+    showMessage("authMessage", error.message || "Something went wrong.", "error");
+  } finally {
+    $("authSubmit").disabled = false;
+  }
+});
+
+function showAuth() {
+  $("authView").classList.remove("hidden");
+  $("chatView").classList.add("hidden");
+  currentUser = null;
+  currentProfile = null;
+  if (messageSubscription) {
+    client.removeChannel(messageSubscription);
+    messageSubscription = null;
+  }
+}
+
+async function showChat(user) {
+  currentUser = user;
+  $("authView").classList.add("hidden");
+  $("chatView").classList.remove("hidden");
+  setConnection("LOADING");
+
+  const { data: profile, error } = await client
+    .from("profiles")
+    .select("id, username, display_name, role, is_banned")
+    .eq("id", user.id)
+    .single();
+
+  if (error || !profile) {
+    showMessage("chatMessage",
+      "Could not load your profile. Please sign out and sign in again. " +
+      (error ? error.message : ""), "error");
+    setConnection("PROFILE ERROR");
+    return;
+  }
+
+  if (profile.is_banned) {
+    await client.auth.signOut();
+    showAuth();
+    showMessage("authMessage", "This account is banned.", "error");
+    return;
+  }
+
+  currentProfile = profile;
+  $("sideDisplayName").textContent = profile.display_name || profile.username;
+  $("sideUsername").textContent = "@" + profile.username;
+  $("avatar").textContent =
+    (profile.display_name || profile.username || "P").charAt(0).toUpperCase();
+  $("editDisplayName").value = profile.display_name || "";
+  $("editUsername").value = profile.username || "";
+
+  await loadMessages();
+  subscribeToMessages();
+}
+
+function renderMessage(message) {
+  if (messageIds.has(String(message.id))) return;
+  messageIds.add(String(message.id));
+
+  const container = $("messages");
+  const empty = container.querySelector(".empty");
+  if (empty) empty.remove();
+
+  const item = document.createElement("article");
+  item.className = "msg" +
+    (currentUser && message.user_id === currentUser.id ? " mine" : "");
+
+  const top = document.createElement("div");
+  top.className = "msg-top";
+
+  const name = document.createElement("span");
+  name.className = "msg-name";
+  name.textContent = message.username || "user";
+
+  const time = document.createElement("span");
+  time.className = "msg-time";
+  const date = new Date(message.created_at);
+  time.textContent = Number.isNaN(date.getTime())
+    ? ""
+    : date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+
+  const content = document.createElement("div");
+  content.className = "msg-content";
+  content.textContent = message.content;
+
+  top.append(name, time);
+  item.append(top, content);
+  container.appendChild(item);
+  container.scrollTop = container.scrollHeight;
+}
+
+async function loadMessages() {
+  $("messages").replaceChildren();
+  messageIds.clear();
+
+  const placeholder = document.createElement("div");
+  placeholder.className = "empty";
+  placeholder.textContent = "Loading messages...";
+  $("messages").appendChild(placeholder);
+
+  const { data, error } = await client
+    .from("messages")
+    .select("id, user_id, username, content, created_at")
+    .order("created_at", { ascending: true })
+    .limit(100);
+
+  if (error) {
+    $("messages").replaceChildren();
+    const errorText = document.createElement("p");
+    errorText.className = "error";
+    errorText.textContent = "Couldn't load messages: " + error.message;
+    $("messages").appendChild(errorText);
+    return;
+  }
+
+  $("messages").replaceChildren();
+  if (!data || data.length === 0) {
+    const empty = document.createElement("div");
+    empty.className = "empty";
+    const text = document.createElement("p");
+    text.textContent = "No messages yet. Start the conversation!";
+    empty.appendChild(text);
+    $("messages").appendChild(empty);
+    return;
+  }
+
+  data.forEach(renderMessage);
+}
+
+function subscribeToMessages() {
+  if (messageSubscription) client.removeChannel(messageSubscription);
+
+  messageSubscription = client
+    .channel("piltae-chat-live")
+    .on(
+      "postgres_changes",
+      { event: "INSERT", schema: "public", table: "messages" },
+      (payload) => renderMessage(payload.new)
+    )
+    .subscribe((status) => {
+      if (status === "SUBSCRIBED") setConnection("CONNECTED");
+      else if (status === "CHANNEL_ERROR") setConnection("LIVE UPDATE ERROR");
+      else if (status === "CLOSED") setConnection("DISCONNECTED");
+    });
+}
+
+$("messageForm").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  if (!currentUser || !currentProfile) return;
+
+  const input = $("messageInput");
+  const content = input.value.trim();
+  if (!content) return;
+
+  $("sendButton").disabled = true;
+  showMessage("chatMessage", "");
+
+  try {
+    const { error } = await client.from("messages").insert({
+      user_id: currentUser.id,
+      username: currentProfile.username,
+      content
     });
 
-    $("messageForm").addEventListener("submit", event => {
-      event.preventDefault();
-      const input = $("messageInput");
-      const value = input.value.trim();
-      if (!value) return;
+    if (error) throw error;
+    input.value = "";
+    input.focus();
+  } catch (error) {
+    showMessage("chatMessage", error.message || "Message could not be sent.", "error");
+  } finally {
+    $("sendButton").disabled = false;
+  }
+});
 
-      const message = document.createElement("div");
-      message.className = "message";
+$("profileForm").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  if (!currentUser || !currentProfile) return;
 
-      const author = document.createElement("strong");
-      author.textContent = $("currentUser").textContent || "Preview User";
+  const username = $("editUsername").value.trim().toLowerCase();
+  const displayName = $("editDisplayName").value.trim();
 
-      const content = document.createElement("span");
-      content.textContent = ": " + value;
+  if (!/^[a-zA-Z0-9_]{3,24}$/.test(username)) {
+    showMessage("profileMessage",
+      "Username must be 3–24 characters using letters, numbers, or underscores.",
+      "error");
+    return;
+  }
+  if (!displayName) {
+    showMessage("profileMessage", "Display name cannot be empty.", "error");
+    return;
+  }
 
-      message.append(author, content);
-      $("messages").append(message);
-      input.value = "";
-      message.scrollIntoView({ behavior: "smooth", block: "nearest" });
-    });
+  $("saveProfile").disabled = true;
+  showMessage("profileMessage", "Saving...");
 
-    $("logoutButton").addEventListener("click", () => {
-      $("chatPanel").style.display = "none";
-      $("authPanel").style.display = "block";
-    });
+  try {
+    const { data, error } = await client
+      .from("profiles")
+      .update({ username, display_name: displayName })
+      .eq("id", currentUser.id)
+      .select("id, username, display_name, role, is_banned")
+      .single();
 
-    // Demo only: enter the preview chat without creating an account.
-    // Real sign-in will be added when Supabase is connected.
-    $("authForm").addEventListener("dblclick", event => {
-      event.preventDefault();
-      $("authPanel").style.display = "none";
-      $("chatPanel").style.display = "block";
-      $("currentUser").textContent = $("username").value.trim() || "Preview User";
-    });
-  </script>
+    if (error) throw error;
+
+    currentProfile = data;
+    $("sideDisplayName").textContent = data.display_name;
+    $("sideUsername").textContent = "@" + data.username;
+    $("avatar").textContent = data.display_name.charAt(0).toUpperCase();
+
+    showMessage("profileMessage", "Profile saved!", "success");
+  } catch (error) {
+    showMessage("profileMessage",
+      error.message.includes("duplicate") || error.code === "23505"
+        ? "That username is already taken. Try another."
+        : (error.message || "Could not save profile."),
+      "error");
+  } finally {
+    $("saveProfile").disabled = false;
+  }
+});
+
+$("refreshButton").addEventListener("click", loadMessages);
+
+$("logoutButton").addEventListener("click", async () => {
+  const { error } = await client.auth.signOut();
+  if (error) {
+    showMessage("chatMessage", error.message, "error");
+    return;
+  }
+  showAuth();
+  setAuthMode("login");
+});
+
+client.auth.onAuthStateChange((event, session) => {
+  // Defer Supabase queries outside the auth callback.
+  setTimeout(async () => {
+    if (session && session.user) {
+      if (!currentUser || currentUser.id !== session.user.id) {
+        await showChat(session.user);
+      }
+    } else {
+      showAuth();
+      setConnection("NOT SIGNED IN");
+    }
+  }, 0);
+});
+
+async function startApp() {
+  setConnection("CONNECTING");
+
+  const { data, error } = await client.auth.getSession();
+  if (error) {
+    setConnection("CONNECTION ERROR");
+    showMessage("authMessage", error.message, "error");
+    return;
+  }
+
+  if (data.session) {
+    await showChat(data.session.user);
+  } else {
+    setConnection("NOT SIGNED IN");
+  }
+}
+
+startApp();
+</script>
 </body>
 </html>
